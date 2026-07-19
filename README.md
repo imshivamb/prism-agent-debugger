@@ -98,20 +98,6 @@ curl -X POST http://127.0.0.1:8000/api/agent-runs \
 
 The response contains a `poll_url`; request it until the run status changes from `running` to `completed` or `failed`.
 
-### Run with Gemini for local testing
-
-Prism also supports Gemini as an optional runner for local validation. It uses Google Search grounding when web research is enabled and records the resulting tool activity and response in the same Prism trace contract. Copy the example environment file and add your key:
-
-```bash
-cd backend
-cp .env.example .env
-# Edit .env and set GEMINI_API_KEY=...
-.venv/bin/python -m pip install -r requirements.txt
-.venv/bin/uvicorn app.main:app --reload
-```
-
-Choose **Gemini · web research** in the Prism launcher. This is intended for live testing; OpenAI remains Prism's optional GPT-5.6 explanation/proof provider for the hackathon narrative.
-
 ### Challenge and branch a decision
 
 The landing page includes two key-free curated stories: a reproduced checkout failure and a weak-evidence action that Prism blocks. In any completed run, use **Branch re-run** in the inspector to state one changed assumption. Prism starts a new agent execution, records a `prism.branch.v1` provenance artifact, and opens it against its baseline with a deterministic trace diff.

@@ -38,7 +38,7 @@ type ApiEvent = Omit<ExecutionEvent, "duration" | "position" | "insight" | "tool
   tool_calls: ExecutionEvent["toolCalls"];
   parent_event_id?: string | null;
 };
-type ApiRun = { id: string; title: string; task: string; provider: "openai_agents" | "gemini" | "import" | "curated"; status: "running" | "completed" | "failed"; started_at: string; completed_at: string | null; events: ApiEvent[] };
+type ApiRun = { id: string; title: string; task: string; provider: "openai_agents" | "import" | "curated"; status: "running" | "completed" | "failed"; started_at: string; completed_at: string | null; events: ApiEvent[] };
 export type RunView = { run: { id: string; title: string; task: string; startedAt: string; duration: string; status: ApiRun["status"]; provider: ApiRun["provider"] }; events: ExecutionEvent[]; source: "api" | "demo" };
 
 const presentation = new Map(fallbackEvents.map((event) => [event.id, event]));
@@ -66,10 +66,8 @@ export async function getRun(runId: string): Promise<RunView> {
     run: { id: apiRun.id, title: apiRun.title, task: apiRun.task, provider: apiRun.provider, startedAt: new Intl.DateTimeFormat("en", { hour: "numeric", minute: "2-digit" }).format(new Date(apiRun.started_at)), duration: runDuration(apiRun.started_at, apiRun.completed_at), status: apiRun.status },
     events: apiRun.events.map((event) => {
       const display = presentation.get(event.id);
-      const providerMetadata = event.title === "Ground with Google Search" && event.output.trim().startsWith("{");
-      const verboseGeminiPlan = apiRun.provider === "gemini" && event.phase === "Plan";
       const phaseInsight = event.phase === "Plan" ? "The agent defined what it needed to verify before making a recommendation." : event.phase === "Research" || event.phase === "Tool" ? "The agent gathered evidence before it synthesized a recommendation." : event.phase === "Review" || event.phase === "Final answer" ? "This is the agent’s recommendation, ready to be checked against recorded evidence." : "Recorded execution step.";
-      return { ...event, parentEventId: event.parent_event_id, output: providerMetadata ? "Gemini grounded this response with Google Search. The original provider payload is retained as a raw artifact, not shown in the inspector." : verboseGeminiPlan ? "Scope the risks, verify claims against current sources, then propose a reversible rollout with explicit uncertainty." : event.output, toolCalls: event.tool_calls ?? [], timestamp: new Intl.DateTimeFormat("en", { hour: "numeric", minute: "2-digit", second: "2-digit", hour12: false }).format(new Date(event.timestamp)), duration: duration(event.duration_ms), position: display?.position ?? providerPosition(event), insight: display?.insight ?? (providerMetadata ? "Prism captured source grounding without exposing provider metadata to the reviewer." : phaseInsight) };
+      return { ...event, parentEventId: event.parent_event_id, toolCalls: event.tool_calls ?? [], timestamp: new Intl.DateTimeFormat("en", { hour: "numeric", minute: "2-digit", second: "2-digit", hour12: false }).format(new Date(event.timestamp)), duration: duration(event.duration_ms), position: display?.position ?? providerPosition(event), insight: display?.insight ?? phaseInsight };
     }),
     source: "api",
   };
@@ -80,8 +78,8 @@ export async function getFeaturedRun(): Promise<RunView> {
   catch { return { run: { ...fallbackRun, status: "completed" }, events: fallbackEvents, source: "demo" }; }
 }
 
-export async function startAgentRun(task: string, options: { title?: string; branchFromRunId?: string; branchInstruction?: string; provider?: "openai_agents" | "gemini" } = {}): Promise<{ id: string }> {
-  const response = await fetch("/prism-api/api/agent-runs", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ task, title: options.title, provider: options.provider, branch_from_run_id: options.branchFromRunId, branch_instruction: options.branchInstruction, tools: ["web_search"] }) });
+export async function startAgentRun(task: string, options: { title?: string; branchFromRunId?: string; branchInstruction?: string } = {}): Promise<{ id: string }> {
+  const response = await fetch("/prism-api/api/agent-runs", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ task, title: options.title, provider: "openai_agents", branch_from_run_id: options.branchFromRunId, branch_instruction: options.branchInstruction, tools: ["web_search"] }) });
   if (!response.ok) throw new Error((await response.json().catch(() => null))?.detail ?? "Could not start agent run.");
   const body = await response.json() as { run: { id: string } };
   return body.run;

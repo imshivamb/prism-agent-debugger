@@ -53,7 +53,7 @@ class AgentRunRequest(BaseModel):
     """Provider-neutral request for a Prism-managed autonomous run."""
     task: str = Field(min_length=3, max_length=12_000)
     title: str | None = Field(default=None, max_length=255)
-    provider: Literal["openai_agents", "gemini"] = "openai_agents"
+    provider: Literal["openai_agents"] = "openai_agents"
     model: str | None = None
     tools: list[Literal["web_search"]] = Field(default_factory=lambda: ["web_search"])
     max_turns: int = Field(default=8, ge=1, le=20)

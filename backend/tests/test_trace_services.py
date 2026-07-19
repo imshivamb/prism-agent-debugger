@@ -56,11 +56,6 @@ class TraceServicesTest(unittest.TestCase):
         self.assertEqual(pending.provider, "openai_agents")
         self.assertEqual(pending.events[0].status, "active")
 
-    def test_creates_a_gemini_pending_run(self):
-        pending = create_pending_run(self.session, AgentRunRequest(task="Research a safe payments migration.", provider="gemini"))
-        self.assertEqual(pending.provider, "gemini")
-        self.assertEqual(pending.events[0].metadata.model, "gemini-3.5-flash")
-
     def test_records_branch_provenance_before_running(self):
         branch = create_pending_run(self.session, AgentRunRequest(
             task="Research a safe payments migration.", branch_from_run_id=self.fixture_run.id,
