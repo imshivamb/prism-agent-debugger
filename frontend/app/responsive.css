@@ -1,0 +1,11 @@
+@media (max-width: 1100px) {
+  .workspace-grid { grid-template-columns: 238px minmax(500px, 1fr); }
+  .inspector { display: block; grid-column: 1 / -1; max-height: none; border-top: 1px solid #1b2638; border-left: 0; }
+}
+
+@media (max-width: 760px) {
+  .inspector { display: block; padding: 18px 16px; }
+  .replay-bar { padding: 0 14px; }
+  .replay-progress:before { width: 42px; }
+  .replay-progress i { display: none; }
+}

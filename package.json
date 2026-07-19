@@ -1,0 +1,11 @@
+{
+  "name": "prism",
+  "private": true,
+  "packageManager": "pnpm@10.15.0",
+  "scripts": {
+    "dev": "pnpm --dir frontend dev",
+    "build": "pnpm --dir frontend build",
+    "lint": "pnpm --dir frontend lint"
+  },
+  "workspaces": ["frontend"]
+}

@@ -1,0 +1,29 @@
+@media (min-width: 1101px) {
+  .workspace-grid {
+    height: calc(100vh - 199px);
+    min-height: 0;
+    overflow: hidden;
+  }
+
+  .timeline, .canvas-panel, .inspector { min-height: 0; }
+  .timeline, .inspector { overflow-y: auto; overscroll-behavior: contain; }
+  .canvas-panel { overflow: hidden; }
+  .flow-wrap { min-height: 0; }
+}
+
+@media (min-width: 761px) and (max-width: 1100px) {
+  .inspector { max-height: 55vh; overflow-y: auto; overscroll-behavior: contain; }
+}
+
+.analysis-card { min-height: 122px; }
+.proof-card { min-height: 0; }
+
+.readable-output { display: grid; gap: 8px; margin-top: 8px; }
+.readable-output p { margin: 0; color: #aebacc; font-size: 11px; line-height: 1.7; }
+.readable-output h4 { margin: 5px 0 0; color: #c9bcff; font: 10px 'DM Mono', monospace; letter-spacing: .08em; }
+.output-bullet { display: flex; gap: 7px; color: #aebacc; font-size: 11px; line-height: 1.65; }
+.output-bullet i { color: #a78bfa; font-style: normal; }
+.output-number { display: flex; gap: 8px; color: #aebacc; font-size: 11px; line-height: 1.65; }
+.output-number i { align-items: center; background: #1e293b; border-radius: 999px; color: #c9bcff; display: inline-flex; font: 9px 'DM Mono', monospace; font-style: normal; height: 17px; justify-content: center; margin-top: 1px; min-width: 17px; }
+.output-table-row { background: #101b2b; border: 1px solid #24364e; border-radius: 7px; color: #b8c5d8; display: grid; font-size: 10px; gap: 7px; grid-template-columns: repeat(auto-fit, minmax(100px, 1fr)); line-height: 1.55; padding: 8px; }
+.output-table-row span:first-child { color: #d2dcf0; font-weight: 600; }

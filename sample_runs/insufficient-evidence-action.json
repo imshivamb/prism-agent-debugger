@@ -1,0 +1,21 @@
+{
+  "id": "run_insufficient_evidence_043",
+  "title": "Investigate an intermittent billing alert",
+  "task": "Assess whether to automatically disable the billing retry worker after a single alert.",
+  "status": "completed",
+  "started_at": "2026-07-17T09:42:00Z",
+  "completed_at": "2026-07-17T09:43:02Z",
+  "trace_version": "1.0",
+  "provider": "curated",
+  "events": [
+    {
+      "id": "alert_scope", "sequence": 1, "phase": "Plan", "title": "Read the alert", "timestamp": "2026-07-17T09:42:00Z", "duration_ms": 12000, "status": "completed",
+      "prompt": "Assess the alert before changing production behavior.", "input": "One retry-worker latency alert from the last five minutes.", "output": "The alert is isolated; no customer impact or repeated failure pattern was captured.", "tool_calls": [{"name": "alerts.read", "summary": "Read the single alert payload", "status": "success"}], "metadata": {"latency": "12.0s", "tokens": "603", "model": "gpt-5.6"}
+    },
+    {
+      "id": "alert_recommend", "sequence": 2, "phase": "Review", "title": "Propose a cautious response", "timestamp": "2026-07-17T09:42:12Z", "duration_ms": 50000, "status": "completed",
+      "prompt": "Recommend the next safe action based only on evidence collected.", "input": "One isolated alert, no logs, metrics trend, or reproduction.", "output": "Do not automatically disable the retry worker. Collect metrics and logs, then request human review if the alert repeats.", "tool_calls": [], "metadata": {"latency": "50.0s", "tokens": "981", "model": "gpt-5.6"}
+    }
+  ],
+  "raw_artifacts": []
+}

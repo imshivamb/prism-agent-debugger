@@ -1,0 +1,17 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Prism Execution Event",
+  "type": "object",
+  "required": ["id", "sequence", "phase", "title", "timestamp", "status", "prompt", "input", "output"],
+  "properties": {
+    "id": { "type": "string" },
+    "sequence": { "type": "integer", "minimum": 1 },
+    "phase": { "type": "string" },
+    "title": { "type": "string" },
+    "timestamp": { "type": "string", "format": "date-time" },
+    "status": { "enum": ["completed", "failed", "active"] },
+    "prompt": { "type": "string" },
+    "input": { "type": "string" },
+    "output": { "type": "string" }
+  }
+}

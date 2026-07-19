@@ -1,0 +1,45 @@
+.api-badge {
+  margin-left: 8px;
+  padding: 3px 5px;
+  border: 1px solid #275d52;
+  border-radius: 4px;
+  color: #6ee7b7;
+  background: #10271f;
+  font-size: 8px;
+  letter-spacing: .08em;
+}
+
+.export-button, .icon-button, .play-button, .timeline-item, .root-cause button {
+  transition: border-color .18s ease, background-color .18s ease, color .18s ease, transform .18s ease;
+}
+
+.export-button:hover, .icon-button:hover { border-color: #74819a; background: #172338; }
+.play-button:hover { border-color: #9b8df2; background: #252044; }
+.root-cause button:hover { color: #fecdd3; transform: translateX(2px); }
+.live-dot.is-running { background: #60a5fa; box-shadow: 0 0 0 0 #60a5fa99; animation: prism-pulse 1.4s infinite; }
+@keyframes prism-pulse { 70% { box-shadow: 0 0 0 7px transparent; } 100% { box-shadow: 0 0 0 0 transparent; } }
+
+.story-node { position: relative; }
+
+.story-node, .timeline-item, .inspector, .analysis-card, .proof-card {
+  transition: border-color .24s ease, background-color .24s ease, box-shadow .24s ease, transform .24s ease, opacity .24s ease;
+}
+
+.react-flow__node.selected .story-node {
+  border-color: var(--accent);
+  box-shadow: 0 0 0 1px color-mix(in srgb, var(--accent) 55%, transparent), 0 18px 35px #00000055;
+}
+
+.react-flow__node.selected .story-node::after {
+  content: "Selected";
+  position: absolute;
+  top: -9px;
+  right: 9px;
+  padding: 2px 5px;
+  border: 1px solid var(--accent);
+  border-radius: 999px;
+  color: var(--accent);
+  background: #0b1220;
+  font: 8px 'DM Mono', monospace;
+  letter-spacing: .04em;
+}

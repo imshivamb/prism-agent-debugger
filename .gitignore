@@ -1,0 +1,22 @@
+node_modules/
+.next/
+.DS_Store
+
+# Secrets: keep templates, never keys.
+.env
+.env.*
+!.env.example
+!backend/.env.example
+
+__pycache__/
+*.pyc
+*.db
+backend/.venv/
+
+# Local planning and submission-working notes; public docs live in README.md.
+PROJECT_PLAN.md
+SUBMISSION_PLAN.md
+TEST_REPORT.md
+DEMO_SCRIPT.md
+HACKATHON_NOTES.md
+PRODUCT_ROADMAP.md

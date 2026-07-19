@@ -1,0 +1,7 @@
+.story-node.is-selected {
+  border-color: var(--accent);
+  box-shadow: 0 0 0 1px color-mix(in srgb, var(--accent) 58%, transparent), 0 16px 32px #00000055, 0 0 22px color-mix(in srgb, var(--accent) 20%, transparent);
+}
+.story-node.is-on-path:not(.is-selected) { border-color: color-mix(in srgb, var(--accent) 56%, #31425d); }
+.story-handle { background: transparent !important; border: 0 !important; height: 100% !important; opacity: 0; top: 50% !important; width: 8px !important; }
+.node-evidence { color: #fb9aa7; display: block; font: 8px 'DM Mono', monospace; letter-spacing: .02em; margin-top: -6px; }
