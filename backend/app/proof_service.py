@@ -9,7 +9,7 @@ import os
 from sqlalchemy import select
 from sqlalchemy.orm import Session
 from .models import DecisionProofRecord
-from .schemas import ActionGate, ChallengeResult, DecisionProof, ExecutionRun
+from .schemas import ActionGate, ChallengeResult, DecisionProof, EvidenceStressResult, ExecutionRun, ProofStressTest
 
 
 def _event(run: ExecutionRun, event_id: str):
@@ -122,3 +122,33 @@ def challenge(proof: DecisionProof, disabled_evidence: list[str]) -> ChallengeRe
         verification = "signal"
         gate = ActionGate(status="blocked", label="Blocked", reason="The remaining evidence cannot justify an external remediation action.")
     return ChallengeResult(target_event_id=proof.target_event_id, original_verification=proof.verification, challenged_verification=verification, active_evidence=active, disabled_evidence=sorted(disabled), action_gate=gate)
+
+
+def stress_test(proof: DecisionProof) -> ProofStressTest:
+    """Measure how each individual provenance link affects the action gate.
+
+    This is deliberately deterministic: it calls the same gate evaluator a
+    reviewer uses, once per evidence link, rather than asking a model to infer
+    importance after the fact.
+    """
+    baseline = challenge(proof, [])
+    gate_rank = {"blocked": 0, "human_review": 1, "auto_safe": 2}
+    results: list[EvidenceStressResult] = []
+    for evidence in proof.evidence:
+        result = challenge(proof, [f"{evidence.event_id}:{evidence.kind}"])
+        gate_changed = gate_rank[result.action_gate.status] < gate_rank[baseline.action_gate.status]
+        verification_changed = result.challenged_verification != baseline.challenged_verification
+        if gate_changed:
+            classification = "critical"
+            reason = f"Removing this link downgrades the action gate to {result.action_gate.label.lower()}."
+        elif verification_changed:
+            classification = "supporting"
+            reason = "Removing this link weakens the proof classification but leaves the action gate unchanged."
+        else:
+            classification = "redundant"
+            reason = "The remaining recorded evidence preserves the current action gate."
+        results.append(EvidenceStressResult(
+            evidence=evidence, classification=classification, reason=reason,
+            resulting_verification=result.challenged_verification, action_gate=result.action_gate,
+        ))
+    return ProofStressTest(target_event_id=proof.target_event_id, baseline_gate=baseline.action_gate, results=results)

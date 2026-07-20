@@ -61,6 +61,10 @@ class ApiContractTest(unittest.TestCase):
         self.assertEqual(challenged.status_code, 200)
         self.assertEqual(challenged.json()["action_gate"]["status"], "human_review")
 
+        stress_test = self.client.post(f"/api/runs/{self.fixture_run.id}/proof/recommend/stress-test")
+        self.assertEqual(stress_test.status_code, 200)
+        self.assertTrue(any(item["classification"] == "critical" for item in stress_test.json()["results"]))
+
         approval = self.client.post(
             f"/api/runs/{self.fixture_run.id}/actions/recommend/approvals",
             json={"decision": "approved", "note": "Accepted in API contract test.", "disabled_evidence": ["inspect:reproduction"]},

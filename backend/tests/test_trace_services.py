@@ -12,7 +12,7 @@ from app.agent_service import create_pending_run
 from app.approval_service import list_approvals, record_approval
 from app.database import Base
 from app import models  # noqa: F401 - registers ORM models
-from app.proof_service import challenge, get_or_compile
+from app.proof_service import challenge, get_or_compile, stress_test
 from app.repository import get_run, upsert_run
 from app.schemas import AgentRunRequest, ApprovalDecisionRequest, ExecutionRun, RawArtifact
 from app.trace_ingest import import_trace
@@ -93,6 +93,14 @@ class TraceServicesTest(unittest.TestCase):
         self.assertEqual(challenged.action_gate.status, "human_review")
         blocked = challenge(proof, ["inspect:reproduction", "compare:correlation", "inspect:log"])
         self.assertEqual(blocked.action_gate.status, "blocked")
+
+    def test_stress_test_identifies_gate_critical_evidence(self):
+        proof = get_or_compile(self.session, self.fixture_run, "recommend")
+        assessment = stress_test(proof)
+        reproduced = next(item for item in assessment.results if item.evidence.kind == "reproduction")
+        self.assertEqual(assessment.baseline_gate.status, "auto_safe")
+        self.assertEqual(reproduced.classification, "critical")
+        self.assertEqual(reproduced.action_gate.status, "human_review")
 
     def test_generic_weak_evidence_is_blocked(self):
         fixture_path = Path(__file__).resolve().parents[2] / "sample_runs" / "insufficient-evidence-action.json"

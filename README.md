@@ -28,6 +28,7 @@ This is a curated run, not a fake chat UI: it is persisted in SQLite and served 
 - **Decision intelligence** — evidence-backed explanations of key decisions and root causes.
 - **Decision Proofs** — a causal chain from a recommendation to source events, rejected alternatives, and a verification level.
 - **Prism Challenge + Action Gates** — dispute an evidence link, see verification degrade, and persist an approve/reject decision with its review context.
+- **Proof Stress Test** — automatically remove each evidence link in isolation to identify which links are critical to an action gate.
 - **Branch re-runs + trace diff** — re-run a task with one changed assumption and compare observable status, outcomes, and tool activity against its baseline.
 - **Local-first** — SQLite plus local JSON traces; no account, cloud service, or vector database.
 - **Export** — download a self-contained execution-story JSON report.
@@ -100,7 +101,7 @@ The response contains a `poll_url`; request it until the run status changes from
 
 ### Challenge and branch a decision
 
-The landing page includes two key-free curated stories: a reproduced checkout failure and a weak-evidence action that Prism blocks. In any completed run, use **Branch re-run** in the inspector to state one changed assumption. Prism starts a new agent execution, records a `prism.branch.v1` provenance artifact, and opens it against its baseline with a deterministic trace diff.
+The landing page includes two key-free curated stories: a reproduced checkout failure and a weak-evidence action that Prism blocks. Each Decision Proof includes a **Proof Stress Test**, which recalculates the deterministic action gate after removing each evidence link in isolation and labels it critical, supporting, or redundant. In any completed run, use **Branch re-run** in the inspector to state one changed assumption. Prism starts a new agent execution, records a `prism.branch.v1` provenance artifact, and opens it against its baseline with a deterministic trace diff.
 
 ### Import another agent workflow
 
@@ -148,6 +149,8 @@ For major decisions, Prism compiles a proof rather than merely restating the age
 - a verification level: **signal**, **correlated**, or **reproduced**.
 
 This is the product's core trust primitive: reviewers can audit *why* an agent acted, not just what it did.
+
+The **Proof Stress Test** makes that audit actionable: it tests each evidence link against the same deterministic gate evaluator used by the reviewer. Prism can therefore show whether removing a link leaves an action auto-safe, requires human review, or blocks it entirely.
 
 ## Project structure
 

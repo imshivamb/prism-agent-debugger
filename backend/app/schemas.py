@@ -126,6 +126,20 @@ class ChallengeResult(BaseModel):
     action_gate: ActionGate
 
 
+class EvidenceStressResult(BaseModel):
+    evidence: EvidenceRef
+    classification: Literal["critical", "supporting", "redundant"]
+    reason: str
+    resulting_verification: Literal["signal", "correlated", "reproduced"]
+    action_gate: ActionGate
+
+
+class ProofStressTest(BaseModel):
+    target_event_id: str
+    baseline_gate: ActionGate
+    results: list[EvidenceStressResult]
+
+
 class ApprovalDecisionRequest(BaseModel):
     decision: Literal["approved", "rejected"]
     note: str = Field(default="", max_length=2_000)

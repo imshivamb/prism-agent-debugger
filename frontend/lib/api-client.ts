@@ -29,6 +29,18 @@ export type ChallengeResult = {
   action_gate: { status: "auto_safe" | "human_review" | "blocked"; label: string; reason: string };
 };
 
+export type ProofStressTest = {
+  target_event_id: string;
+  baseline_gate: ChallengeResult["action_gate"];
+  results: Array<{
+    evidence: DecisionProof["evidence"][number];
+    classification: "critical" | "supporting" | "redundant";
+    reason: string;
+    resulting_verification: "signal" | "correlated" | "reproduced";
+    action_gate: ChallengeResult["action_gate"];
+  }>;
+};
+
 export type ActionApproval = { id: number; decision: "approved" | "rejected"; note: string; created_at: string };
 export type TraceDiff = { baseline_run_id: string; candidate_run_id: string; summary: string; baseline_steps: number; candidate_steps: number; baseline_status: string; candidate_status: string; changes: { category: "outcome" | "step" | "tools" | "status"; label: string; baseline: string; candidate: string; impact: "info" | "review" | "risk" }[] };
 
@@ -119,6 +131,15 @@ export async function challengeDecisionProof(runId: string, eventId: string, dis
       body: JSON.stringify({ disabled_evidence: disabledEvidence }),
     });
     return response.ok ? (response.json() as Promise<ChallengeResult>) : null;
+  } catch {
+    return null;
+  }
+}
+
+export async function getProofStressTest(runId: string, eventId: string): Promise<ProofStressTest | null> {
+  try {
+    const response = await fetch(`/prism-api/api/runs/${runId}/proof/${eventId}/stress-test`, { method: "POST" });
+    return response.ok ? (response.json() as Promise<ProofStressTest>) : null;
   } catch {
     return null;
   }

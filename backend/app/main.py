@@ -12,9 +12,9 @@ from dotenv import load_dotenv
 from sqlalchemy.orm import Session
 from .database import SessionLocal, create_database, get_session
 from .repository import get_run as find_run, list_runs as find_runs, upsert_run
-from .schemas import ActionApproval, AgentRunRequest, AgentRunStartResponse, AnalysisRequest, AnalysisResponse, ApprovalDecisionRequest, ChallengeRequest, ChallengeResult, DecisionProof, ExecutionRun, TraceDiff, TraceImportRequest
+from .schemas import ActionApproval, AgentRunRequest, AgentRunStartResponse, AnalysisRequest, AnalysisResponse, ApprovalDecisionRequest, ChallengeRequest, ChallengeResult, DecisionProof, ExecutionRun, ProofStressTest, TraceDiff, TraceImportRequest
 from .analysis_service import get_or_generate
-from .proof_service import challenge, get_or_compile
+from .proof_service import challenge, get_or_compile, stress_test
 from .agent_service import launch
 from .trace_ingest import import_trace
 from .approval_service import list_approvals, record_approval
@@ -132,6 +132,17 @@ def challenge_proof(run_id: str, event_id: str, request: ChallengeRequest, sessi
     if not any(item.id == event_id for item in run.events):
         raise HTTPException(status_code=404, detail="Execution event not found")
     return challenge(get_or_compile(session, run, event_id), request.disabled_evidence)
+
+
+@app.post("/api/runs/{run_id}/proof/{event_id}/stress-test", response_model=ProofStressTest)
+def stress_test_proof(run_id: str, event_id: str, session: DbSession) -> ProofStressTest:
+    """Show which individual evidence links the current action gate depends on."""
+    run = find_run(session, run_id)
+    if not run:
+        raise HTTPException(status_code=404, detail="Execution run not found")
+    if not any(item.id == event_id for item in run.events):
+        raise HTTPException(status_code=404, detail="Execution event not found")
+    return stress_test(get_or_compile(session, run, event_id))
 
 
 @app.post("/api/runs/{run_id}/actions/{event_id}/approvals", response_model=ActionApproval, status_code=201)
